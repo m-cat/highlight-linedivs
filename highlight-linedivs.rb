@@ -1,4 +1,41 @@
-require "rouge-lines"
+require "rouge"
+
+module Rouge
+  module Formatters
+    # Transforms a token stream into HTML output.
+    class HTMLLegacy < Formatter
+      tag 'html_legacy'
+
+      # @option opts [String] :css_class ('highlight')
+      # @option opts [true/false] :line_numbers (false)
+      # @option opts [true/false] :linewise (false)
+      # @option opts [RougeLines::CSSTheme] :inline_theme (nil)
+      # @option opts [true/false] :wrap (true)
+      #
+      # Initialize with options.
+      #
+      # If `:inline_theme` is given, then instead of rendering the
+      # tokens as <span> tags with CSS classes, the styles according to
+      # the given theme will be inlined in "style" attributes.  This is
+      # useful for formats in which stylesheets are not available.
+      #
+      # Content will be wrapped in a tag (`div` if tableized, `pre` if
+      # not) with the given `:css_class` unless `:wrap` is set to `false`.
+      def initialize(opts={})
+        @formatter = opts[:inline_theme] ? HTMLInline.new(opts[:inline_theme])
+                     : HTML.new
+
+        @formatter = HTMLLinewise.new(@formatter, opts) if opts[:linewise]
+
+        @formatter = HTMLTable.new(@formatter, opts) if opts[:line_numbers]
+
+        if opts.fetch(:wrap, true)
+          @formatter = HTMLPygments.new(@formatter, opts.fetch(:css_class, 'codehilite'))
+        end
+      end
+    end
+  end
+end
 
 module Jekyll
   module Tags
@@ -45,13 +82,13 @@ MSG
       def sanitized_opts(opts, is_safe)
         if is_safe
           Hash[[
-            [:startinline, opts.fetch(:startinline, nil)],
-            [:hl_lines,    opts.fetch(:hl_lines, nil)],
-            [:linenos,     opts.fetch(:linenos, nil)],
-            [:linedivs,    opts.fetch(:linedivs, nil)],
-            [:encoding,    opts.fetch(:encoding, "utf-8")],
-            [:cssclass,    opts.fetch(:cssclass, nil)],
-          ].reject { |f| f.last.nil? }]
+                 [:startinline, opts.fetch(:startinline, nil)],
+                 [:hl_lines,    opts.fetch(:hl_lines, nil)],
+                 [:linenos,     opts.fetch(:linenos, nil)],
+                 [:linedivs,    opts.fetch(:linedivs, nil)],
+                 [:encoding,    opts.fetch(:encoding, "utf-8")],
+                 [:cssclass,    opts.fetch(:cssclass, nil)],
+               ].reject { |f| f.last.nil? }]
         else
           opts
         end
@@ -81,7 +118,7 @@ MSG
       end
 
       def render_rouge(code)
-        formatter = ::RougeLines::Formatters::HTMLLegacy.new(
+        formatter = ::Rouge::Formatters::HTMLLegacy.new(
           :line_numbers => @highlight_options[:linenos],
           :linewise     => @highlight_options[:linedivs],
           :wrap         => false,
@@ -89,7 +126,7 @@ MSG
           :gutter_class => "gutter",
           :code_class   => "code"
         )
-        lexer = ::RougeLines::Lexer.find_fancy(@lang, code) || RougeLines::Lexers::PlainText
+        lexer = ::Rouge::Lexer.find_fancy(@lang, code) || Rouge::Lexers::PlainText
         formatter.format(lexer.lex(code))
       end
     end

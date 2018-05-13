@@ -12,15 +12,14 @@ There were no good options for displaying line numbers in Jekyll source code. Wr
 
 ## How?
 
-Add the gem `rouge-lines` to your `Gemfile`:
+Make sure your default highlighter is Rouge. In `_config.yml`:
 
-```ruby
-group :jekyll_plugins do
-  gem "rouge-lines", "3.2.3"
-end
+```yml
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+highlighter: rouge
 ```
-
-and run `bundle update`. (Or is it `bundle install`? I'm not a Ruby guy.)
 
 Then take the `highlight-linedivs.rb` file and push it somewhere else! (To the `_plugins` folder.)
 
