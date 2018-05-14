@@ -1,6 +1,6 @@
 # highlight-linedivs
 
-Generate line divs using Jekyll's highlight tag.
+Generate line divs using Jekyll's highlight tag. See [this post](https://www.bytedude.com/jekyll-syntax-highlighting-and-line-numbers/) for more information.
 
 ## What?
 
@@ -8,7 +8,7 @@ This plugin injects a new option `linedivs` into the `highlight` tag. This will 
 
 ## Why?
 
-There were no good options for displaying line numbers in Jekyll source code. Wrapping each line inside a `div` makes it pretty easy. I'm writing a blog post on how to do that.
+There were no good options for displaying line numbers in Jekyll source code. Wrapping each line inside a `div` makes it pretty easy. See [my blog post](https://www.bytedude.com/jekyll-syntax-highlighting-and-line-numbers/) for more details.
 
 ## How?
 
